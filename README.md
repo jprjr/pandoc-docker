@@ -1,22 +1,11 @@
 # Pandoc Docker Container
 
-[Docker](https://www.docker.com/) container for the source distribution of [Pandoc](https://pandoc.org/index.html), with Latex tools installed.
+[Docker](https://www.docker.com/) container for the binary distribution of [Pandoc](https://pandoc.org/index.html).
 
 Forked from [jagregory/pandoc](https://github.com/jagregory/pandoc-docker)
 
     docker run jprjr/pandoc
 
-    pandoc [OPTIONS] [FILES]
-    Input formats:  docbook, haddock, html, json, latex, markdown, markdown_github,
-                    markdown_mmd, markdown_phpextra, markdown_strict, mediawiki,
-                    native, opml, rst, textile
-    Output formats: asciidoc, beamer, context, docbook, docx, dzslides, epub, epub3,
-                    fb2, html, html5, json, latex, man, markdown, markdown_github,
-                    markdown_mmd, markdown_phpextra, markdown_strict, mediawiki,
-                    native, odt, opendocument, opml, org, pdf*, plain, revealjs,
-                    rst, rtf, s5, slideous, slidy, texinfo, textile
-                    [*for pdf output, use latex or beamer and -o FILENAME.pdf
-
 A `/source` directory is created in the container, which can be mapped for use with relative file paths. Pandoc will always be run from the `/source` directory in the container.
 
-    docker run -v `pwd`:/source jprjr/pandoc -f markdown -t html5 myfile.md -o myfile.html
+    docker run --rm -v $(pwd):/source jprjr/pandoc -f markdown -t html5 myfile.md -o myfile.html

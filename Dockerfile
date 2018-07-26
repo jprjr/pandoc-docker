@@ -1,33 +1,25 @@
-FROM haskell:8.4
+FROM alpine:3.7
+ARG PANDOC_VERSION="2.2.2.1"
 
-# install latex packages
-RUN apt-get update -y \
-  && apt-get install -y -o Acquire::Retries=10 --no-install-recommends \
-    texlive-latex-base \
-    texlive-xetex latex-xcolor \
-    texlive-math-extra \
-    texlive-latex-extra \
-    texlive-fonts-extra \
-    texlive-bibtex-extra \
-    fontconfig \
-    lmodern && \
-  useradd -m pandoc
+RUN apk add --no-cache curl && \
+    adduser -h /home/pandoc -D pandoc && \
+    mkdir -p /source && \
+    mkdir -p /home/pandoc/.local && \
+    chown pandoc:pandoc /source && \
+    chown pandoc:pandoc /home/pandoc/.local
 
-RUN mkdir -p /source && \
-    chown pandoc:pandoc /source
-
-# will ease up the update process
-# updating this env variable will trigger the automatic build of the Docker image
 USER pandoc
 WORKDIR /home/pandoc
 
-ARG PANDOC_VERSION="2.2.2.1"
-
 # install pandoc
-RUN cabal update && cabal install pandoc-${PANDOC_VERSION}
+RUN cd /home/pandoc/.local && \
+    curl -R -L -O https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-linux.tar.gz && \
+    tar xf pandoc-${PANDOC_VERSION}-linux.tar.gz && \
+    mv pandoc-${PANDOC_VERSION}/* . && \
+    rm -rf pandoc-${PANDOC_VERSION} pandoc-${PANDOC_VERSION}-linux.tar.gz
 
 WORKDIR /source
 
-ENTRYPOINT ["/home/pandoc/.cabal/bin/pandoc"]
+ENTRYPOINT ["/home/pandoc/.local/bin/pandoc"]
 
 CMD ["--help"]
